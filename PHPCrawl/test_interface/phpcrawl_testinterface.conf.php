@@ -6,13 +6,13 @@
 #####################################################
 
 // Username and password for the test-interface-login.
-$cfg_authUsername = "";
-$cfg_authPassword = "";
+$cfg_authUsername = "admin";
+$cfg_authPassword = "thunder49";
 
 #####################################################
 
 // This follwoing options should be okay like they are.
-  
+
 // Where to save your setups.
 // Be sure the script is allowed to
 // write to this diretory.

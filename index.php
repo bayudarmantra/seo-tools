@@ -1,82 +1,23 @@
 <?php
+//Include Core Class
+require_once("Spider.php");
 
 // It may take a whils to crawl a site ...
 set_time_limit(10000);
 
-// Inculde the phpcrawl-mainclass
-include("PHPCrawl/libs/PHPCrawler.class.php");
+$url = "http://www.handaragolfresort.com";
 
-// Extend the class and override the handleDocumentInfo()-method
-class MyCrawler extends PHPCrawler
-{
-  function handleDocumentInfo($DocInfo)
-  {
-    // Just detect linebreak for output ("\n" in CLI-mode, otherwise "<br>").
-    if (PHP_SAPI == "cli") $lb = "\n";
-    else $lb = "<br />";
-
-    // Print the URL and the HTTP-status-Code
-    echo "Page requested: ".$DocInfo->url." (".$DocInfo->http_status_code.")".$lb;
-
-    // Print the refering URL
-    echo "Referer-page: ".$DocInfo->referer_url.$lb;
-
-    echo "Link title: ".$DocInfo->refering_linktext.$lb;
-
-    echo "Content type: ".$DocInfo->content_type.$lb;
-
-    // Print if the content of the document was be recieved or not
-    if ($DocInfo->received == true)
-      echo "Content received: ".$DocInfo->bytes_received." bytes".$lb;
-    else
-      echo "Content not received".$lb;
-
-    // Now you should do something with the content of the actual
-    // received page or file ($DocInfo->source), we skip it in this example
-
-    echo $lb;
-
-    flush();
-  }
-}
-
-// Now, create a instance of your class, define the behaviour
-// of the crawler (see class-reference for more options and details)
-// and start the crawling-process.
-
-$crawler = new MyCrawler();
-
-// URL to crawl
-$crawler->setURL("www.handaragolfresort.com");
-
-// Only receive content of files with content-type "text/html"
+$crawler = new Spider();
+$crawler->setURL($url);
 $crawler->addContentTypeReceiveRule("#text/html#");
-$crawler->addContentTypeReceiveRule("#text/css#");
-$crawler->addContentTypeReceiveRule("#application/x-javascript#");
-
-$crawler->addLinkSearchContentType("#text/css# i");
-$crawler->addLinkSearchContentType("#application/x-javascript# i");
-
-// Ignore links to pictures, dont even request pictures
 $crawler->addURLFilterRule("#\.(jpg|jpeg|gif|png)$# i");
-
-// Store and send cookie-data like a browser does
 $crawler->enableCookieHandling(true);
 $crawler->enableAggressiveLinkSearch(false);
 $crawler->excludeLinkSearchDocumentSections(PHPCrawlerLinkSearchDocumentSections::ALL_SPECIAL_SECTIONS);
-
-// Set the traffic-limit to 1 MB (in bytes,
-// for testing we dont want to "suck" the whole site)
-//$crawler->setTrafficLimit(1000 * 1024);
-
+$crawler->setFollowMode(0);
 $crawler->setCrawlingDepthLimit(1);
 $crawler->setLinkExtractionTags(array("href", "src"));
-
-// Thats enough, now here we go
 $crawler->go();
-
-// At the end, after the process is finished, we print a short
-// report (see method getProcessReport() for more information)
 $report = $crawler->getProcessReport();
 
 if (PHP_SAPI == "cli") $lb = "\n";
@@ -87,4 +28,16 @@ echo "Links followed: ".$report->links_followed.$lb;
 echo "Documents received: ".$report->files_received.$lb;
 echo "Bytes received: ".$report->bytes_received." bytes".$lb;
 echo "Process runtime: ".$report->process_runtime." sec".$lb;
+echo "Data throughput:".$report->data_throughput.$lb;
+
+$scrapper = $crawler->init_scrapper($url);
+$whois = $crawler->hosting_info($url);
+
+echo "<strong>Page Title:</strong> ". $scrapper['title'].'<br/>';
+echo "<strong>Favicon:</strong> ". $scrapper['favicon'].'<br/>';
+echo "<strong>Viewport:</strong> ". $scrapper['viewport'].'<br/>';
+echo "<strong>Meta Description:</strong> ". $scrapper['meta_description'].'<br/>';
+echo '<br>';
+echo "<strong>Domain created:</strong> ". $whois->date_created.'<br/>';
+echo "<strong>Domain expired:</strong> ". $whois->date_expires.'<br/>';
 ?>
