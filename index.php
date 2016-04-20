@@ -3,11 +3,22 @@
 require_once("Spider.php");
 
 // It may take a whils to crawl a site ...
-set_time_limit(10000);
+//set_time_limit(10000);
 
-$url = "http://www.handaragolfresort.com";
+$url = "http://stackoverflow.com/questions/9943771/adding-a-favicon-to-a-static-html-page";
+//$url = "http://.com";
 
-$crawler = new Spider();
+//$host = parse_url($url)['host'];
+//var_dump($host);
+
+$spider = new Spider();
+$spider->load_url($url);
+echo "<strong>Page Title:</strong> ". $spider->get_page_title().'<br/>';
+echo "<strong>Favicon:</strong> ". $spider->get_favicon().'<br/>';
+echo "<strong>Viewport:</strong> ". $spider->get_meta_viewport().'<br/>';
+echo "<strong>Meta Description:</strong> ". $spider->get_meta_description().'<br/>';
+
+/*$crawler = new Spider();
 $crawler->setURL($url);
 $crawler->addContentTypeReceiveRule("#text/html#");
 $crawler->addURLFilterRule("#\.(jpg|jpeg|gif|png)$# i");
@@ -28,9 +39,9 @@ echo "Links followed: ".$report->links_followed.$lb;
 echo "Documents received: ".$report->files_received.$lb;
 echo "Bytes received: ".$report->bytes_received." bytes".$lb;
 echo "Process runtime: ".$report->process_runtime." sec".$lb;
-echo "Data throughput:".$report->data_throughput.$lb;
+echo "Data throughput:".$report->data_throughput.$lb;*/
 
-$scrapper = $crawler->init_scrapper($url);
+/*$scrapper = $crawler->init_scrapper($url);
 $whois = $crawler->hosting_info($url);
 
 echo "<strong>Page Title:</strong> ". $scrapper['title'].'<br/>';
@@ -39,5 +50,5 @@ echo "<strong>Viewport:</strong> ". $scrapper['viewport'].'<br/>';
 echo "<strong>Meta Description:</strong> ". $scrapper['meta_description'].'<br/>';
 echo '<br>';
 echo "<strong>Domain created:</strong> ". $whois->date_created.'<br/>';
-echo "<strong>Domain expired:</strong> ". $whois->date_expires.'<br/>';
+echo "<strong>Domain expired:</strong> ". $whois->date_expires.'<br/>';*/
 ?>

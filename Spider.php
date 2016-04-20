@@ -7,6 +7,8 @@ require_once("simple_html_dom.php");
 
 class Spider extends PHPCrawler
 {
+  public $site_content = '';
+
   /*PHP CRAWLER*/
   function handleDocumentInfo(PHPCrawlerDocumentInfo $data)
   {
@@ -25,27 +27,73 @@ class Spider extends PHPCrawler
   }
 
   /*Simple HTML DOM*/
-  function init_scrapper($url)
+  public function load_url($url)
   {
-    $data = array();
-    $html = file_get_html($url);
+    $this->site_content = file_get_html($url);
+  }
 
-    /*Page title*/
-    $data['title'] = $html->find('title',0)->innertext;
+  /*Get page title*/
+  public function get_page_title()
+  {
+    $html = $this->site_content;
 
-    /*Favicon*/
-    $data['favicon'] = $html->find('link[rel=shortcut icon]',0)->href;
+    if(is_object($html->find('title',0)))
+    {
+      return $html->find('title',0)->innertext;
+    }
+    else
+    {
+      return "not found";
+    }
+  }
 
-    /*Viewport*/
-    $data['viewport'] = $html->find('meta[name=viewport]',0)->content;
+  /*Get favicon*/
+  public function get_favicon()
+  {
+    $html = $this->site_content;
 
-    /*Meta desc*/
-    $data['meta_description'] = $html->find('meta[name=description]',0)->content;
+    if(is_object($html->find('link[rel=shortcut icon]',0)))
+    {
+      return $html->find('link[rel=shortcut icon]',0)->href;
+    }
+    elseif(is_object($html->find('link[rel=icon]',0)))
+    {
+      return $html->find('link[rel=icon]',0)->href;
+    }
+    else
+    {
+      return "not found";
+    }
+  }
 
-    $html->clear();
-    unset($html);
+  /*Get meta viewport*/
+  public function get_meta_viewport()
+  {
+    $html = $this->site_content;
 
-    return $data;
+    if(is_object($html->find('meta[name=viewport]',0)))
+    {
+      $html->find('meta[name=viewport]',0)->content;
+    }
+    else
+    {
+      return "not found";
+    }
+  }
+
+  /*Get meta description*/
+  public function get_meta_description()
+  {
+    $html = $this->site_content;
+
+    if(is_object($html->find('meta[name=description]',0)))
+    {
+      return $html->find('meta[name=description]',0)->content;
+    }
+    else
+    {
+      return "not found";
+    }
   }
 
   function hosting_info($url)
@@ -59,7 +107,7 @@ class Spider extends PHPCrawler
      $data = array();
 
      $ch = curl_init();
-     curl_setopt($ch, CURLOPT_URL, 'http://api.whoapi.com/?domain=handaragolfresort.com&r=whois&apikey=891dba0c731bf827ad8105c25b6640db');
+     curl_setopt($ch, CURLOPT_URL, 'http://api.whoapi.com/?domain=lipsum.com&r=whois&apikey=891dba0c731bf827ad8105c25b6640db');
      curl_setopt($ch, CURLOPT_USERAGENT, "MozillaXYZ/1.0");
      curl_setopt($ch, CURLOPT_HEADER, 0);
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
